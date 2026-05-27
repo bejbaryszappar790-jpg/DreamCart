@@ -53,31 +53,41 @@ class Parent_Product(Base):
     __tablename__ = "Parent_Product"
 
     parent_id = Column(Integer, primary_key = True, index = True)
+    saleman_id = Column(Integer, ForeignKey("Saleman.saleman_id"), index = True)
     category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
     parent_name = Column(String, nullable = False)
     parent_sex = Column(String, nullable = False)
     parent_community = Column(String, nullable = False)
 
 class Product_Description(Base):
+    __tablename__ = "Product_Description"
     des_id = Column(Integer, primary_key = True, index = True)
-    Catego
-class Child_Product(Base):
-    __tablename__ = "Child_Product"
+    category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
+    parent_id = Column(Integer, ForeignKey("Parent_Product.parent_id"), nullable = False, index = True)
+    des_image_url = Column(String, nullable = False)
+    des_price = Column(Numeric(10, 2), nullable = False)
 
-    child_id = Column(Integer, primary_key = True, index = True)
+class Attribute(Base):
+    __tablename__ = "Attribute"
+
+    att_id = Column(Integer, primary_key = True, index = True)
+    des_id = Column(Integer, ForeignKey("Product_Description.des_id"), nullable = False, index = True)
+    att_name = Column(String, nullable = False)
+    att_value = Column(String, nullable = False)
+    
      
 class Stock(Base):
     __tablename__ = "Product_Variant_Stock"
 
     stock_id = Column(Integer, primary_key = True, index = True)
-    certain_id = Column(Integer, ForeignKey("Certain_Product.certain_id"), index = True)
+    des_id = Column(Integer, ForeignKey("Product_Description.des_id"), nullable = False, index = True)
     stock_quantity = Column(Integer, nullable = False)
 
 
 class Cart_Item(Base):
     __tablename__ = "Cart"
     cart_id = Column(Integer, primary_key=True, index = True)
-    certain_id = Column(Integer, ForeignKey("Certain_Product.certain_id"), index = True)
+    des_id = Column(Integer, ForeignKey("Product_Description.des_id"), nullable = False, index = True)
     cus_id = Column(Integer, ForeignKey("Customer.cus_id"), index = True)
 
 
@@ -93,10 +103,5 @@ class Order_Item(Base):
     __tablename__ = "Order_Item"
     order_item_id = Column(Integer, primary_key = True, index = True)
     order_id = Column(Integer, ForeignKey("Order.order_id"), index = True)
-    certain_id = Column(Integer, ForeignKey("Certain_Product.certain_id"), index = True)
+    des_id = Column(Integer, ForeignKey("Product_Description.des_id"), nullable = False, index = True)
     price_at_purchase = Column(Numeric(10, 2), nullable = False)
-
-
-    
-
-    
