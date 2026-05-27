@@ -59,7 +59,6 @@ class Parent_Product(Base):
 class Product_Description(Base):
     __tablename__ = "Product_Description"
     des_id = Column(Integer, primary_key = True, index = True)
-    category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
     parent_id = Column(Integer, ForeignKey("Parent_Product.parent_id"), nullable = False, index = True)
     des_image_url = Column(String, nullable = False)
     des_price = Column(Numeric(10, 2), nullable = False)
