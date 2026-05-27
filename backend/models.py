@@ -1,15 +1,12 @@
 from backend.database import Base
 from sqlalchemy import(
     Column,
-    Boolean,
     Integer,
     String,
     ForeignKey,
     DateTime,
-    UniqueConstraint,
     Numeric
 )
-from decimal import Decimal
 from sqlalchemy.sql import func
 
 
