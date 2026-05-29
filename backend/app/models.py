@@ -21,12 +21,12 @@ class Customer(Base):
     cus_hashed_password = Column(String, nullable = False)
 
 
-class Saleman(Base):
-    __tablename__ = "Saleman"
+class Salesman(Base):
+    __tablename__ = "Salesman"
 
-    saleman_id = Column(Integer, primary_key=True, index = True)
-    saleman_f_name = Column(String, nullable = False)
-    saleman_l_name = Column(String, nullable = False)
+    salemsan_id = Column(Integer, primary_key=True, index = True)
+    salesman_f_name = Column(String, nullable = False)
+    salesman_l_name = Column(String, nullable = False)
     sale_phone = Column(String, nullable = False)
     sale_email = Column(String, nullable = False, unique = True)
     sale_hashed_password = Column(String, nullable = False)
@@ -50,7 +50,7 @@ class Parent_Product(Base):
     __tablename__ = "Parent_Product"
 
     parent_id = Column(Integer, primary_key = True, index = True)
-    saleman_id = Column(Integer, ForeignKey("Saleman.saleman_id"), index = True)
+    salesman_id = Column(Integer, ForeignKey("Salesman.salessman_id"), index = True)
     category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
     parent_name = Column(String, nullable = False)
     parent_sex = Column(String, nullable = False)

@@ -1,7 +1,7 @@
-from fastapi import FastAPI 
+from fastapi import FastAPI
+from backend.app.router.customer import router as cus_router
 
 app = FastAPI()
 
-@app.get("/my_router")
-def get_res():
-    return "Hello!!"
+
+app.include_router(cus_router)
