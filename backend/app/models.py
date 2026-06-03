@@ -24,7 +24,7 @@ class Customer(Base):
 class Salesman(Base):
     __tablename__ = "Salesman"
 
-    salemsan_id = Column(Integer, primary_key=True, index = True)
+    salesman_id = Column(Integer, primary_key=True, index = True)
     salesman_f_name = Column(String, nullable = False)
     salesman_l_name = Column(String, nullable = False)
     sale_phone = Column(String, nullable = False)
@@ -50,7 +50,7 @@ class Parent_Product(Base):
     __tablename__ = "Parent_Product"
 
     parent_id = Column(Integer, primary_key = True, index = True)
-    salesman_id = Column(Integer, ForeignKey("Salesman.salessman_id"), index = True)
+    salesman_id = Column(Integer, ForeignKey("Salesman.salesman_id"), index = True)
     category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
     parent_name = Column(String, nullable = False)
     parent_sex = Column(String, nullable = False)
@@ -73,7 +73,7 @@ class Attribute(Base):
     
      
 class Stock(Base):
-    __tablename__ = "Product_Variant_Stock"
+    __tablename__ = "Stock"
 
     stock_id = Column(Integer, primary_key = True, index = True)
     des_id = Column(Integer, ForeignKey("Product_Description.des_id"), nullable = False, index = True)
