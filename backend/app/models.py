@@ -5,7 +5,8 @@ from sqlalchemy import(
     String,
     ForeignKey,
     DateTime,
-    Numeric
+    Numeric,
+    UniqueConstraint
 )
 from sqlalchemy.sql import func
 
@@ -60,8 +61,16 @@ class Product_Description(Base):
     __tablename__ = "Product_Description"
     des_id = Column(Integer, primary_key = True, index = True)
     parent_id = Column(Integer, ForeignKey("Parent_Product.parent_id"), nullable = False, index = True)
+    salesman_id = Column(Integer, ForeignKey("Salesman.salesman_id"), nullable = False, index = True)
+    des_order = Column(Integer, nullable = False, index = True)
     des_image_url = Column(String, nullable = False)
     des_price = Column(Numeric(10, 2), nullable = False)
+
+    __table_args__=(
+        UniqueConstraint(
+            "salesman_id", "parent_id", "des_order", name = "description_parent_salesman"
+        )
+    )
 
 class Attribute(Base):
     __tablename__ = "Attribute"

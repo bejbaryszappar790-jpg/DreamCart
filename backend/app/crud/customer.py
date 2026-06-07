@@ -40,3 +40,6 @@ async def login_customer(db : AsyncSession, cus_email : str, cus_hashed_password
     result = await db.execute(query)
     
     return result.scalars().first()
+
+
+
