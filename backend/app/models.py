@@ -11,27 +11,25 @@ from sqlalchemy import(
 from sqlalchemy.sql import func
 
 
-class Customer(Base):
-    __tablename__ = "Customer"
+class User(Base):
+    __tablename__ = "User"
 
-    cus_id = Column(Integer, primary_key= True, index= True)
-    cus_f_name = Column(String, nullable = False)
-    cus_l_name = Column(String, nullable = False)
-    cus_phone = Column(String, nullable = False)
-    cus_email = Column(String, nullable = False, unique = True)
-    cus_hashed_password = Column(String, nullable = False)
+    user_id = Column(Integer, primary_key= True, index= True)
+    user_f_name = Column(String, nullable = False)
+    user_l_name = Column(String, nullable = False)
+    user_phone = Column(String, nullable = False)
+    user_email = Column(String, nullable = False, unique = True)
+    user_hashed_password = Column(String, nullable = False)
+    user_role = Column(String, nullable = False)
 
 
-class Salesman(Base):
-    __tablename__ = "Salesman"
+class Salesman_Data(Base):
+    __tablename__ = "Salesman_Data"
 
     sale_id = Column(Integer, primary_key=True, index = True)
-    sale_f_name = Column(String, nullable = False)
-    sale_l_name = Column(String, nullable = False)
-    sale_phone = Column(String, nullable = False)
-    sale_email = Column(String, nullable = False, unique = True)
-    sale_hashed_password = Column(String, nullable = False)
-    sale_IP_number = Column(String, nullable = False)
+    user_id = Column(Integer, ForeignKey("User.user_id"), index = True, nullable = False)
+    sale_iin = Column(Integer, index = True, nullable = False)
+    sale_biin = Column(Integer, index = True, nullable = False)
 
 
 class Admin(Base):
@@ -51,7 +49,7 @@ class Parent_Product(Base):
     __tablename__ = "Parent_Product"
 
     parent_id = Column(Integer, primary_key = True, index = True)
-    sale_id = Column(Integer, ForeignKey("Salesman.sale_id"), index = True)
+    user_id = Column(Integer, ForeignKey("User.User_id"), index = True)
     category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
     parent_name = Column(String, nullable = False)
     parent_sex = Column(String, nullable = False)
@@ -61,14 +59,14 @@ class Variant(Base):
     __tablename__ = "Variant"
     var_id = Column(Integer, primary_key = True, index = True)
     parent_id = Column(Integer, ForeignKey("Parent_Product.parent_id"), nullable = False, index = True)
-    sale_id = Column(Integer, ForeignKey("Salesman.sale_id"), nullable = False, index = True)
+    user_id = Column(Integer, ForeignKey("User.user_id"), nullable = False, index = True)
     var_order = Column(Integer, nullable = False, index = True)
     var_image_url = Column(String, nullable = False)
     var_price = Column(Numeric(10, 2), nullable = False)
 
     __table_args__=(
         UniqueConstraint(
-            "sale_id", "parent_id", "var_order", name = "description_parent_salesman"
+            "user_id", "parent_id", "var_order", name = "description_parent_salesman"
         )
     )
 
@@ -93,13 +91,13 @@ class Cart_Item(Base):
     __tablename__ = "Cart"
     cart_id = Column(Integer, primary_key=True, index = True)
     var_id = Column(Integer, ForeignKey("Variant.var_id"), nullable = False, index = True)
-    cus_id = Column(Integer, ForeignKey("Customer.cus_id"), index = True)
+    user_id = Column(Integer, ForeignKey("User.user_id"), index = True)
 
 
 class Orders(Base):
     __tablename__ = "Order"
     order_id = Column(Integer, primary_key=True, index = True)
-    cus_id = Column(Integer, ForeignKey("Customer.cus_id"), index = True)
+    user_id = Column(Integer, ForeignKey("User.user_id"), index = True)
     purchase_time = Column(DateTime(timezone = True), server_default = func.now())
     total_amount = Column(Numeric(10, 2))
     payment_status = Column(String, default= "pending")

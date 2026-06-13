@@ -1,0 +1,65 @@
+from backend.app.models import User, Salesman_Data
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from backend.app.security.password import get_hashed_password
+
+
+async def register_user(db : AsyncSession, 
+                            user_f_name : str,
+                            user_l_name : str, 
+                            user_phone : str, 
+                            user_email : str,
+                            user_plain_password : str,
+                            user_role : str,
+                            sale_iin : int | None,
+                            sale_biin : int | None
+                            ) -> User | None:
+    
+    new_hashed_password = get_hashed_password(user_plain_password)
+    new_user = User(user_email = user_email, 
+                       user_f_name = user_f_name, 
+                       user_l_name = user_l_name,  
+                       user_phone = user_phone, 
+                       user_hashed_password = new_hashed_password,
+                       user_role = user_role
+                       )
+    
+
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+    if user_role == "salesman" and sale_iin and sale_biin:
+        new_sale_data = Salesman_Data(
+            user_id = new_user.user_id,
+            sale_biin = sale_biin,
+            sale_iin = sale_iin
+        )
+
+        await db.add(new_sale_data)
+        await db.commit()
+    
+    return new_user
+
+
+async def search_user_by_email(db : AsyncSession, 
+                              user_email : str) -> User | None:
+    query = select(User).where(User.user_email == user_email)
+
+    result = await db.execute(query)
+    return result.scalars().first()
+
+
+async def search_user_by_id(db : AsyncSession,
+                            user_id : int) -> User | None:
+
+    query = (
+        select(User)
+        .where(User.user_id == user_id)
+    )
+
+    result = await db.execute(query)
+    return result.scalars().first()
+
+
+
+
