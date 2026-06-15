@@ -6,14 +6,14 @@ from backend.app.models import (
     Stock
     )
 from sqlalchemy.future import select
-
+from sqlalchemy.orm import aliased
 
 async def create_cart(db : AsyncSession, 
                       attributes : dict, 
                       parent_id : int, 
                       sale_id : int, 
                       cus_id : int
-                      ):
+                      ) -> Cart_Item:
     
     query = (
         select(Variant, Stock)
@@ -22,9 +22,10 @@ async def create_cart(db : AsyncSession,
         )
     
     for key, value in attributes.items():
+        att_alias = aliased(Attribute, name = "att_alias")
         query = (
-            query.join(Attribute, Variant.var_id == Attribute.var_id)
-            .where(Attribute.att_name == key, Attribute.att_value == value)
+            query.join(att_alias, Variant.var_id == att_alias.vat_id)
+            .where(att_alias.att_name == key, att_alias.att_value == value)
         )
     
     var_result = await db.execute(query)

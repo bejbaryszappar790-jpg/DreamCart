@@ -18,5 +18,5 @@ class Create_Cart_Out(Create_Cart_Base):
     user_id : int
     
     model_config = ConfigDict(
-        from_attribute = True
+        from_attributes = True
     )

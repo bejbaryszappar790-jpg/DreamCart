@@ -6,7 +6,7 @@ class User_Registration_Base(BaseModel):
     user_l_name : str = Field(..., min_length = 1, max_length = 50)
     user_email : EmailStr
     user_phone : str
-    user_role : str = Field(..., min_length = 8, max_lenght = 8)
+    user_role : str = Field(..., min_length = 8, max_length = 8)
     @field_validator('user_phone')
     @staticmethod
     def phone_validation(user_phone : str):

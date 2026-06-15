@@ -9,6 +9,8 @@ from sqlalchemy import(
     UniqueConstraint
 )
 from sqlalchemy.sql import func
+from enum import Enum
+from sqlalchemy.orm import Mapped, mapped_column
 
 
 class User(Base):
@@ -28,8 +30,8 @@ class Salesman_Data(Base):
 
     sale_id = Column(Integer, primary_key=True, index = True)
     user_id = Column(Integer, ForeignKey("User.user_id"), index = True, nullable = False)
-    sale_iin = Column(Integer, index = True, nullable = False)
-    sale_biin = Column(Integer, index = True, nullable = False)
+    sale_iin = Column(String, index = True, nullable = False)
+    sale_biin = Column(String, index = True, nullable = False)
 
 
 class Admin(Base):
@@ -49,7 +51,7 @@ class Parent_Product(Base):
     __tablename__ = "Parent_Product"
 
     parent_id = Column(Integer, primary_key = True, index = True)
-    user_id = Column(Integer, ForeignKey("User.User_id"), index = True)
+    user_id = Column(Integer, ForeignKey("User.user_id"), index = True)
     category_id = Column(Integer, ForeignKey("Category.category_id"), nullable = False, index = True)
     parent_name = Column(String, nullable = False)
     parent_sex = Column(String, nullable = False)
@@ -92,7 +94,13 @@ class Cart_Item(Base):
     cart_id = Column(Integer, primary_key=True, index = True)
     var_id = Column(Integer, ForeignKey("Variant.var_id"), nullable = False, index = True)
     user_id = Column(Integer, ForeignKey("User.user_id"), index = True)
+    cart_quantity = Column(Integer, nullable = False)
 
+
+class Payment_Status(str, Enum):
+    PENDING = "Pending"
+    SUCCEEDED = "Succeeded"
+    FAILED = "Failed"
 
 class Orders(Base):
     __tablename__ = "Order"
@@ -100,7 +108,12 @@ class Orders(Base):
     user_id = Column(Integer, ForeignKey("User.user_id"), index = True)
     purchase_time = Column(DateTime(timezone = True), server_default = func.now())
     total_amount = Column(Numeric(10, 2))
-    payment_status = Column(String, default= "pending")
+    payment_status : Mapped[Payment_Status] = mapped_column(
+        String(10),
+        default = Payment_Status.PENDING,
+        nullable = False
+    )
+    
 
 class Order_Item(Base):
     __tablename__ = "Order_Item"
@@ -108,3 +121,4 @@ class Order_Item(Base):
     order_id = Column(Integer, ForeignKey("Order.order_id"), index = True)
     var_id = Column(Integer, ForeignKey("Variant.var_id"), nullable = False, index = True)
     price_at_purchase = Column(Numeric(10, 2), nullable = False)
+    order_quantiy = Column(Integer, nullable = False)

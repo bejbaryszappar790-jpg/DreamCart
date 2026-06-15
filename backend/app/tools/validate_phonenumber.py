@@ -7,7 +7,7 @@ def validate_phone_number(cls, phone : str):
 
         return phonenumbers.format_number(number, phonenumbers.E164)
         
-    except(Exception, NumberParseException):
+    except NumberParseException:
         raise ValueError("Phonenumber doesn't match region phonenumber standard")
         
         
