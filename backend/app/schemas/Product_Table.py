@@ -8,7 +8,7 @@ from pydantic import (
 class Product_Table_In(BaseModel):
     number_of_passed_rows : int 
     category_id : int | None
-    user_search : str | None
+    user_search : str
     attribute : str = "id"
 
 

@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
 from backend.app.database import get_db
 from backend.app.schemas.Product_Table import Product_Table_Out, Product_Table_In
 from backend.app.schemas.Into_Product import Into_Product_Out
-from sqlalchemy.exc import SQLAlchemyError
 from backend.app.crud.products import (
     get_products,
     check_parent,
@@ -18,7 +18,7 @@ router = APIRouter(
 Так этот роутер возвращает таблицы данных. Так как в основе этого роутера лежит динамический КРУД это значит что можно ее
 во всех операций где нам нужен результат в виде табиц товаров.
 """
-@router.get("/products", response_model = list[Product_Table_Out])
+@router.get("/product_table", response_model = list[Product_Table_Out])
 async def open_homepage(input: Product_Table_In = Depends(), db : AsyncSession = Depends(get_db)):
     try:
         result = await get_products(db = db, 
@@ -33,7 +33,7 @@ async def open_homepage(input: Product_Table_In = Depends(), db : AsyncSession =
 
 
 
-@router.get("/products/{parent_id}", response_model = Into_Product_Out)
+@router.get("/{parent_id}", response_model = Into_Product_Out)
 async def get_product(parent_id : int, db : AsyncSession = Depends(get_db)):
     check = await check_parent(db = db, parent_id = parent_id)
 

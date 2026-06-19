@@ -1,6 +1,6 @@
-from backend.app.models import User, Salesman_Data
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from backend.app.models import User, Salesman_Data
 from backend.app.security.password import get_hashed_password
 
 
@@ -24,31 +24,31 @@ async def register_user(db : AsyncSession,
                        user_role = user_role
                        )
     
-
-    db.add(new_user)
-    await db.commit()
-    await db.refresh(new_user)
-    
     if user_role == "salesman":
         if sale_biin is None or sale_iin is None:
             return None
         
         if not sale_biin.isdigit() or not sale_iin.isdigit():
             return None
-        
 
+
+    db.add(new_user)
+    await db.commit()
+    await db.refresh(new_user)
+
+    if user_role == "customer":
+        return new_user
+    elif user_role == "salesman":
         new_sale_data = Salesman_Data(
             user_id = new_user.user_id,
             sale_biin = sale_biin,
             sale_iin = sale_iin
         )
     
-
         db.add(new_sale_data)
         await db.commit()
+    
 
-    
-    
     return new_user
 
 

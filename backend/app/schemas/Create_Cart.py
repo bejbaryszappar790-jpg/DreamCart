@@ -5,10 +5,11 @@ from pydantic import BaseModel, ConfigDict
 class Create_Cart_Base(BaseModel):
     parent_id : int
     sale_id : int
-    
+    quantity : int
 
 class Create_Cart_In(Create_Cart_Base):
     attributes : dict
+    
 
     
 

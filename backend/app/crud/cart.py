@@ -1,19 +1,21 @@
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import aliased
 from backend.app.models import (
     Cart_Item,
     Variant,
     Attribute,
     Stock
     )
-from sqlalchemy.future import select
-from sqlalchemy.orm import aliased
+
 
 async def create_cart(db : AsyncSession, 
                       attributes : dict, 
                       parent_id : int, 
                       sale_id : int, 
-                      cus_id : int
-                      ) -> Cart_Item:
+                      cus_id : int,
+                      quantity : int
+                      ) -> Cart_Item | None:
     
     query = (
         select(Variant, Stock)
@@ -22,20 +24,22 @@ async def create_cart(db : AsyncSession,
         )
     
     for key, value in attributes.items():
-        att_alias = aliased(Attribute, name = "att_alias")
+        att_alias = aliased(Attribute)
         query = (
-            query.join(att_alias, Variant.var_id == att_alias.vat_id)
+            query.join(att_alias, Variant.var_id == att_alias.var_id)
             .where(att_alias.att_name == key, att_alias.att_value == value)
         )
     
     var_result = await db.execute(query)
-    var_obj = var_result.first()
-    if var_obj:
+    row = var_result.first()
+    if row:
         
-        check_stock = var_obj[1]
+        variant, stock = row
 
-        if check_stock and check_stock.stock_quantity > 0:
-            cart_item = Cart_Item(var_id = var_obj[0].var_id, user_id = cus_id)
+        if variant and stock.stock_quantity >= quantity:
+            cart_item = Cart_Item(var_id = variant.var_id, 
+                                  user_id = cus_id,
+                                  cart_quantity = quantity)
             db.add(cart_item)
             await db.commit()
             await db.refresh(cart_item)

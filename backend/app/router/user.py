@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.schemas.User_Registration import User_Registration_In, User_Registration_Out
 from backend.app.crud.user import search_user_by_email, register_user
@@ -6,7 +7,7 @@ from backend.app.security.password import verify_password
 from backend.app.schemas.User_Login import User_Login_In, User_Login_Out
 from backend.app.security.token_generating import create_AccessToken, create_RefreshToken
 from backend.app.database import get_db
-from sqlalchemy.exc import SQLAlchemyError
+
 
 
 router = APIRouter(
@@ -18,7 +19,7 @@ router = APIRouter(
 
 
 @router.post("/register", response_model = User_Registration_Out)
-async def Create_Userr(user_in : User_Registration_In, db : AsyncSession = Depends(get_db)):
+async def Create_User(user_in : User_Registration_In, db : AsyncSession = Depends(get_db)):
     try:
         check_user = await search_user_by_email(db = db, user_email = user_in.user_email)
         
@@ -52,14 +53,14 @@ async def user_login(user_in : User_Login_In, db : AsyncSession = Depends(get_db
         check_user = await search_user_by_email(db = db, user_email = user_in.user_email)
         
         if check_user is None:
-            raise HTTPException(status_code = 404, detail = "Email or password is not valid!")
+            raise HTTPException(status_code = 401, detail = "Email or password is not valid!")
         
         checked_password = verify_password(
             plain_password = user_in.user_plain_password, 
             hashed_password = check_user.user_hashed_password
             )
         if not checked_password:
-            raise HTTPException(status_code = 403, detail = "Email or password is not valid!")
+            raise HTTPException(status_code = 401, detail = "Email or password is not valid!")
         
         access_payload = {
             "sub" : check_user.user_id,
@@ -76,7 +77,7 @@ async def user_login(user_in : User_Login_In, db : AsyncSession = Depends(get_db
             "role" : check_user.user_role,
             "f_name" : check_user.user_f_name,
             "l_name" : check_user.user_l_name,
-            "token_name" : "refresh_token"
+            "token_name" : "refresh"
         }
 
         access_token = create_AccessToken(data = access_payload)

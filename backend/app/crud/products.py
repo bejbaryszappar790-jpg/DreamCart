@@ -1,5 +1,8 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy import Row
+from decimal import Decimal
+from typing import Tuple
 from backend.app.models import (
      Parent_Product, 
      Variant,
@@ -24,11 +27,10 @@ async def check_parent(db : AsyncSession, parent_id : int):
 """
 async def get_products(db : AsyncSession, 
                        number_of_passed_rows : int, 
-                       category_id : int = None, 
+                       category_id : int | None, 
                        attribute : str = "id",
-                       user_search : str = None
-                       ) -> list:
-    
+                       user_search : str = ""
+                       ) -> list[Row[Tuple[str, int, int, str, Decimal]]]:
     query = (
         select(Parent_Product.parent_name,
                Parent_Product.parent_id,
@@ -46,7 +48,7 @@ async def get_products(db : AsyncSession,
             query.where(Parent_Product.category_id == category_id)
         )
 
-    if user_search:
+    if user_search != "":
             query = (
                 query.where(Parent_Product.parent_name.ilike(f"%{user_search}%"))
             )
@@ -67,11 +69,11 @@ async def get_products(db : AsyncSession,
     )
         
     result = await db.execute(query)
-    return result.all()
+    return list(result.all())
     
 
 
-async def open_product(db : AsyncSession, parent_id : int) -> dict:
+async def open_product(db : AsyncSession, parent_id : int) -> dict | None:
     try:
         query = (
             select(Parent_Product.parent_name,

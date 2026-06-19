@@ -1,16 +1,16 @@
+import os
+from datetime import datetime, timezone, timedelta
 import jwt
 from jwt.exceptions import PyJWTError
-import os
 from dotenv import load_dotenv
-from datetime import datetime, timezone, timedelta
 from fastapi import HTTPException
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY_FOR_JWT")
-ALGORITHM = os.getenv("ALGORITHM_FOR_JWT")
-ACCES_TIME = os.getenv("ACCESS_TOKEN_TIME")
-REFRESH_TIME = os.getenv("REFRESH_TOKEN_TIME")
+SECRET_KEY = os.getenv("SECRET_KEY_FOR_JWT", "")
+ALGORITHM = os.getenv("ALGORITHM_FOR_JWT", "")
+ACCES_TIME = os.getenv("ACCESS_TOKEN_TIME", "30")
+REFRESH_TIME = os.getenv("REFRESH_TOKEN_TIME", "30")
 
 
 

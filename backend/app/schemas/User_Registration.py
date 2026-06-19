@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, EmailStr, field_validator, ConfigDict
 from backend.app.tools.validate_phonenumber import validate_phone_number
+from backend.app.tools.validate_sale_input import validate_iin_biin
 
 class User_Registration_Base(BaseModel):
     user_f_name : str = Field(..., min_length = 1, max_length = 50)
@@ -16,8 +17,16 @@ class User_Registration_Base(BaseModel):
         
 
 class User_Registration_In(User_Registration_Base):
-    sale_iin : int | None
-    sale_biin : int | None
+    sale_iin : str | None
+    sale_biin : str | None
+
+    
+    @field_validator('sale_iin', 'sale_biin')
+    @staticmethod
+    def sale_validation(sale_input : str | None) -> str | None:
+        return validate_iin_biin(sale_input)
+            
+    
     plain_password : str = Field(..., min_length = 8)
         
 

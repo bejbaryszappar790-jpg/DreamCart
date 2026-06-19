@@ -1,10 +1,11 @@
 from fastapi import Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import SQLAlchemyError
 from backend.app.security.decoding_tokens import decoding_access_token
 from backend.app.crud.user import search_user_by_id
 from backend.app.models import User
 from backend.app.database import get_db
-from sqlalchemy.exc import SQLAlchemyError
+
 
 
 async def get_current_customer(cus_id : int = Depends(decoding_access_token),
@@ -36,3 +37,4 @@ async def get_current_salesman(sale_id : int = Depends(decoding_access_token),
         return curr_sale
     except SQLAlchemyError:
         raise HTTPException(status_code = 500, detail = "Internal Server Error!")
+
