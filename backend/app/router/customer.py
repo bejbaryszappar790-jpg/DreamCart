@@ -5,7 +5,8 @@ from backend.app.database import get_db
 from backend.app.schemas.Create_Cart import Create_Cart_In, Create_Cart_Out
 from backend.app.models import User
 from backend.app.security.get_user import get_current_customer
-from backend.app.crud.cart import create_cart
+from backend.app.crud.cart import create_cart, get_cart_items
+from backend.app.schemas.Cart_Page import Cart_Page_Out
 
 
 router = APIRouter(
@@ -33,6 +34,15 @@ async def create_new_cartitem(input : Create_Cart_In,
         return result
     except SQLAlchemyError:
             raise HTTPException(status_code = 500, detail = "Internal Server Error!")
+
+@router.get("/cart_page", response_model = list[Cart_Page_Out])
+async def open_cart_page(customer : User = Depends(get_current_customer), db : AsyncSession = Depends(get_db)):
+    try:
+        result = await get_cart_items(db = db, customer_id = customer.user_id)
+
+        return result
+    except SQLAlchemyError:
+         raise HTTPException(status_code = 500, detail = "Internal Server Error!")
 
 
     

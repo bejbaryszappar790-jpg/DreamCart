@@ -1,11 +1,13 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from sqlalchemy.orm import aliased
+from sqlalchemy import Row
 from backend.app.models import (
     Cart_Item,
     Variant,
     Attribute,
-    Stock
+    Stock,
+    Parent_Product
     )
 
 
@@ -46,3 +48,28 @@ async def create_cart(db : AsyncSession,
             return cart_item
     
     return None
+
+
+
+
+async def get_cart_items(db : AsyncSession, customer_id : int) -> list[Row]:
+    query = (
+        select(Parent_Product.parent_id,
+               Parent_Product.parent_name,
+               Cart_Item.cart_id,
+               Cart_Item.cart_quantity,
+               Cart_Item.user_id,
+               Variant.var_id,
+               Variant.var_price,
+               Variant.var_image_url
+            )
+        .select_from(Parent_Product)
+        .join(Variant, Variant.parent_id == Parent_Product.parent_id)
+        .join(Cart_Item, Cart_Item.var_id == Variant.var_id)
+        .where(Cart_Item.user_id == customer_id)
+    )
+
+
+
+    result = await db.execute(query)
+    return list(result.all())
