@@ -79,7 +79,7 @@ class Variant(Base):
     __table_args__=(
         UniqueConstraint(
             "user_id", "parent_id", "var_order", name = "description_parent_salesman"
-        )
+        ),
     )
 
 class Attribute(Base):
@@ -134,7 +134,7 @@ class Orders(Base):
 class Order_Item(Base):
     __tablename__ = "Order_Item"
     order_item_id : Mapped[int] = mapped_column(primary_key = True, index = True)
-    order_id : Mapped[int] = mapped_column(ForeignKey("Orders.order_id"), nullable = True, index = True)
+    order_id : Mapped[int] = mapped_column(ForeignKey("Order.order_id"), nullable = True, index = True)
     var_id : Mapped[int] = mapped_column(ForeignKey("Variant.var_id"), nullable = True, index = True)
     price_at_purchase : Mapped[Decimal] = mapped_column(Numeric(10, 2), nullable = False)
     order_quantity : Mapped[int] = mapped_column(nullable = False)

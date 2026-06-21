@@ -7,7 +7,8 @@ from backend.app.models import User
 from backend.app.security.get_user import get_current_customer
 from backend.app.crud.cart import create_cart, get_cart_items
 from backend.app.schemas.Cart_Page import Cart_Page_Out
-
+from backend.app.schemas.Order import Order_In, Order_Out
+from backend.app.crud.orders import make_order
 
 router = APIRouter(
     prefix = "/customer",
@@ -43,6 +44,14 @@ async def open_cart_page(customer : User = Depends(get_current_customer), db : A
         return result
     except SQLAlchemyError:
          raise HTTPException(status_code = 500, detail = "Internal Server Error!")
+    
 
-
+@router.post("/order", response_model = Order_Out)
+async def create_order(input : Order_In, customer : User = Depends(get_current_customer), db : AsyncSession = Depends(get_db)):
+    try:
+        result = await make_order(db = db, cart_ids = input.cart_ids, customer_id = customer.user_id)
+        
+        return result
+    except SQLAlchemyError:
+        raise HTTPException(status_code = 500, detail = "Internal Server Error!")
     

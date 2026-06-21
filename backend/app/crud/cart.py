@@ -59,7 +59,7 @@ async def get_cart_items(db : AsyncSession, customer_id : int) -> list[Row]:
                Cart_Item.cart_id,
                Cart_Item.cart_quantity,
                Cart_Item.user_id,
-               Variant.var_id,
+               Cart_Item.var_id,
                Variant.var_price,
                Variant.var_image_url
             )
