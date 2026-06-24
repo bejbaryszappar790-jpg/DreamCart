@@ -16,3 +16,4 @@ class Order_In(BaseModel):
 class Order_Out(BaseModel):
     total_amount : float
     order_items : list[OrderItems]
+    order_id : int
