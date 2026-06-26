@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from backend.app.schemas.new_token import New_Token_In, New_Token_Out
 from backend.app.security.decoding_tokens import decoding_refresh_token
 from backend.app.security.token_generating import create_AccessToken, create_RefreshToken
