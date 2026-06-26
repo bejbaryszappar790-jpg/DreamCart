@@ -73,11 +73,6 @@ async def user_login(user_in : User_Login_In, db : AsyncSession = Depends(get_db
 
         refresh_payload = {
             "sub" : check_user.user_id,
-            "email" : check_user.user_email,
-            "role" : check_user.user_role,
-            "f_name" : check_user.user_f_name,
-            "l_name" : check_user.user_l_name,
-            "token_name" : "refresh"
         }
 
         access_token = create_AccessToken(data = access_payload)

@@ -16,7 +16,7 @@ def decoding_access_token(token : str = Depends(oauth2_cl)):
         if user_id is None or not str(user_id).isdigit():
             raise HTTPException(status_code = 401, detail = "Token is invalid or expired!")
         
-        if payload["token_name"] != "access":
+        if payload.get("token_name") != "access":
             raise HTTPException(status_code = 401, detail = "Token is invalid or expired!")
         
         return int(user_id)
@@ -24,14 +24,14 @@ def decoding_access_token(token : str = Depends(oauth2_cl)):
         raise HTTPException(status_code = 401, detail = "Token is invalid or expired!")
     
 
-def decoding_refresh_token(token : str = Depends(oauth2_cl)):
+def decoding_refresh_token(token : str):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms = [ALGORITHM])
 
         if payload is None:
             raise HTTPException(status_code = 401, detail = "Token is invalid or expired")
         
-        if payload["token_name"] != "refresh":
+        if payload.get("token_name") != "refresh":
             raise HTTPException(status_code = 401, detail = "Token is invalid or expired!")
         
         return payload
