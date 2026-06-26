@@ -51,6 +51,8 @@ async def create_order(input : Order_In, customer : User = Depends(get_current_c
     try:
         result = await make_order(db = db, cart_ids = input.cart_ids, customer_id = customer.user_id)
         
+        if result is None:
+            raise HTTPException(status_code = 400, detail = "Cart_Items were not found!")
         return result
     except SQLAlchemyError:
         raise HTTPException(status_code = 500, detail = "Internal Server Error!")

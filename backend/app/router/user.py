@@ -42,7 +42,7 @@ async def Create_User(user_in : User_Registration_In, db : AsyncSession = Depend
         if new_user:
             return new_user
         else:
-            raise HTTPException(status_code = 500,  detail = "Internal Server Error!")
+            raise HTTPException(status_code = 400,  detail = "IIN or BIIN is Invalid!")
     except SQLAlchemyError:
             raise HTTPException(status_code = 500,  detail = "Internal Server Error!")
 

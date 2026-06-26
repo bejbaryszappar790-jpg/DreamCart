@@ -38,6 +38,7 @@ async def register_user(db : AsyncSession,
 
     if user_role == "customer":
         return new_user
+    
     elif user_role == "salesman":
         new_sale_data = Salesman_Data(
             user_id = new_user.user_id,

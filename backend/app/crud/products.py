@@ -74,66 +74,64 @@ async def get_products(db : AsyncSession,
 
 
 async def open_product(db : AsyncSession, parent_id : int) -> dict | None:
-    try:
-        query = (
-            select(Parent_Product.parent_name,
-                Variant.var_image_url,
-                Variant.var_price,
-                Attribute.att_name,
-                Attribute.att_value,
-                Parent_Product.user_id
-            )
-            .select_from(Parent_Product)
-            .join(Variant, Parent_Product.parent_id == Variant.parent_id)
-            .join(Attribute, Variant.var_id == Attribute.var_id)
-            .where(Parent_Product.parent_id == parent_id)
-            .distinct()
-            .order_by(Variant.var_price)
+    
+    query = (
+        select(Parent_Product.parent_name,
+            Variant.var_image_url,
+            Variant.var_price,
+            Attribute.att_name,
+            Attribute.att_value,
+            Parent_Product.user_id
+        )
+        .select_from(Parent_Product)
+        .join(Variant, Parent_Product.parent_id == Variant.parent_id)
+        .join(Attribute, Variant.var_id == Attribute.var_id)
+        .where(Parent_Product.parent_id == parent_id)
+        .distinct()
+        .order_by(Variant.var_price)
+    )
+
+    result = await db.execute(query)
+    rows = result.all()
+    if not rows:
+        return None
+
+
+    product = {
+        "parent_name" : rows[0].parent_name,
+        "images" : [],
+        "start_price" : float(rows[0].var_price),
+        "end_price" : float(rows[-1].var_price),
+        "attributes" : {},
+        "sale_id" : rows[0].user_id
+    }
+
+    images = set()
+
+    attributes = {}
+
+    for row in rows:
+        if row.att_name not in attributes:
+            attributes[row.att_name] = set()
+    
+        attributes[row.att_name].add(row.att_value)
+
+
+    for att_name in attributes.keys():
+        attributes[att_name] = list(attributes[att_name]) 
+
+    product["attributes"] = attributes
+
+    for row in rows:
+        images.add(row.var_image_url)
+
+
+    for image in images:
+        product["images"].append(
+            {
+            "var_image_url" : image
+            }
         )
     
-        result = await db.execute(query)
-        rows = result.all()
-        if not rows:
-            return None
-    
 
-        product = {
-            "parent_name" : rows[0].parent_name,
-            "images" : [],
-            "start_price" : float(rows[0].var_price),
-            "end_price" : float(rows[-1].var_price),
-            "attributes" : {},
-            "sale_id" : rows[0].user_id
-        }
-
-        images = set()
-    
-        attributes = {}
-
-        for row in rows:
-            if row.att_name not in attributes:
-                attributes[row.att_name] = set()
-        
-            attributes[row.att_name].add(row.att_value)
-
-
-        for att_name in attributes.keys():
-            attributes[att_name] = list(attributes[att_name]) 
-
-        product["attributes"] = attributes
-
-        for row in rows:
-            images.add(row.var_image_url)
-
-
-        for image in images:
-            product["images"].append(
-                {
-                "var_image_url" : image
-                }
-            )
-        
-
-        return product
-    except IndexError:
-        return None
+    return product
