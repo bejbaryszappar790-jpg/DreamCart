@@ -1,9 +1,10 @@
 import uuid
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from backend.app.schemas.new_token import New_Token_In, New_Token_Out
 from backend.app.security.decoding_tokens import decoding_refresh_token
 from backend.app.security.token_generating import create_AccessToken, create_RefreshToken
+from backend.app.database import get_db
 from backend.app.crud.token import (
     search_refresh, 
     create_refreshrow,
@@ -17,7 +18,7 @@ router = APIRouter(prefix = "/new_token",
                    )
 
 @router.post("/token", response_model = New_Token_Out)
-async def create_new_token(input : New_Token_In, db : AsyncSession):
+async def create_new_token(input : New_Token_In, db : AsyncSession = Depends(get_db)):
     payload = decoding_refresh_token(token = input.refresh_token)
 
     jti : str = payload["jti"]

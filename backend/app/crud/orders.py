@@ -141,3 +141,25 @@ async def change_order_status(db : AsyncSession, order_id : int, is_failed : boo
 
     return order        
 
+
+
+
+async def show_order_items_page(db : AsyncSession, customer_id : int):
+    query = (
+        select(Order_Item.order_item_id,
+               Order_Item.order_quantity,
+               Order_Item.price_at_purchase,
+               Parent_Product.parent_name,
+               Variant.var_image_url
+               )
+        .select_from(Order_Item)
+        .join(Variant, Variant.var_id == Order_Item.var_id)
+        .join(Parent_Product, Variant.parent_id == Parent_Product.parent_id)
+        .join(Orders, Orders.order_id == Order_Item.order_id)
+        .where(Orders.user_id == customer_id)
+    )
+
+
+    result = await db.execute(query)
+
+    return result.all()
