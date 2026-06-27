@@ -76,7 +76,6 @@ async def check_webhoook(request : Request, db : AsyncSession = Depends(get_db))
     
     
     
-    
     session = event["data"]["object"]
 
     metadata = session.get("metadata", {})
@@ -84,12 +83,13 @@ async def check_webhoook(request : Request, db : AsyncSession = Depends(get_db))
     order_id = metadata.get("order_id")
     if order_id is None:
         raise HTTPException(status_code = 404, detail = "Order_id was not found!")
-        
+
+    order = None 
     if event["type"] == "checkout.session.completed":
         order = await change_order_status(db = db, order_id = order_id, is_failed = False)
-    else:
+    elif event["type"] in ["checkout.session.expired", "checkout.session.async.payment_failed"]:
         order = await change_order_status(db = db, order_id = order_id, is_failed = True)
-
+    
 
     if order is None:
         raise HTTPException(status_code = 404, detail = "Order was not found!")

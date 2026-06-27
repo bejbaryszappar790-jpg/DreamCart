@@ -1,3 +1,4 @@
+import uuid
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -7,6 +8,7 @@ from backend.app.security.password import verify_password
 from backend.app.schemas.User_Login import User_Login_In, User_Login_Out
 from backend.app.security.token_generating import create_AccessToken, create_RefreshToken
 from backend.app.database import get_db
+from backend.app.crud.token import create_refreshrow
 
 
 
@@ -62,6 +64,14 @@ async def user_login(user_in : User_Login_In, db : AsyncSession = Depends(get_db
         if not checked_password:
             raise HTTPException(status_code = 401, detail = "Email or password is not valid!")
         
+        jti = str(uuid.uuid4())
+
+        new_token = create_refreshrow(db = db, user_id = check_user.user_id, jti = jti)
+        
+        if new_token is None:
+            raise HTTPException(status_code = 500, detail = "Internal Server Error!")
+        
+
         access_payload = {
             "sub" : check_user.user_id,
             "email" : check_user.user_email,
@@ -73,6 +83,8 @@ async def user_login(user_in : User_Login_In, db : AsyncSession = Depends(get_db
 
         refresh_payload = {
             "sub" : check_user.user_id,
+            "jti" : jti,
+            "token_name" : "refresh"
         }
 
         access_token = create_AccessToken(data = access_payload)
@@ -83,6 +95,7 @@ async def user_login(user_in : User_Login_In, db : AsyncSession = Depends(get_db
             "refresh_token" : refresh_token,
             "token_type" : "bearer"
         }
+    
     except SQLAlchemyError:
         raise HTTPException(status_code = 500,  detail = "Internal Server Error!")
 

@@ -27,6 +27,15 @@ class User(Base):
     user_role : Mapped[str] = mapped_column(String(20), nullable = False)
 
 
+class RefreshToken(Base):
+    __tablename__ = "RefreshToken"
+
+    refresh_id : Mapped[int] = mapped_column(primary_key = True, index = True)
+    jti : Mapped[str] = mapped_column(nullable = True, unique = True, index = True)
+    user_id : Mapped[int] = mapped_column(ForeignKey("User.user_id"), index = True, nullable = False)
+    is_revoked : Mapped[bool] = mapped_column(default = False, nullable = False)
+
+    
 
 class Salesman_Data(Base):
     __tablename__ = "Salesman_Data"

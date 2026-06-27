@@ -5,7 +5,7 @@ import os
 
 load_dotenv()
 
-DB_URL_ENG = os.getenv(str("DATABASE_URL_ENGINE"))
+DB_URL_ENG = os.getenv("DATABASE_URL_ENGINE")
 
 engine = create_async_engine(str(DB_URL_ENG))
 

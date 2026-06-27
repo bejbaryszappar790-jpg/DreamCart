@@ -70,7 +70,7 @@ async def make_order(db : AsyncSession,
         new_order_item = Order_Item(order_id = new_order.order_id, 
                                     var_id = cart.var_id, 
                                     order_quantity = cart.cart_quantity, 
-                                    price_at_purchase = cart.var_price * cart.cart_quantity,
+                                    price_at_purchase = cart.var_price,
                                     cart_id = cart.cart_id
                                     )
         order_items.append(new_order_item)

@@ -31,9 +31,12 @@ def decoding_refresh_token(token : str):
         if payload is None:
             raise HTTPException(status_code = 401, detail = "Token is invalid or expired")
         
+        if payload.get("jti") is None or not payload.get("jti"):
+            raise HTTPException(status_code = 401, detail = "Token is invalid or expired")
+        
         if payload.get("token_name") != "refresh":
             raise HTTPException(status_code = 401, detail = "Token is invalid or expired!")
         
         return payload
-    except (PyJWTError, ValueError, TypeError):
+    except (PyJWTError, ValueError, TypeError, KeyError):
         raise HTTPException(status_code = 401, detail = "Token is invalid or expired!")
