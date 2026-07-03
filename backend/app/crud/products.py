@@ -135,3 +135,22 @@ async def open_product(db : AsyncSession, parent_id : int) -> dict | None:
     
 
     return product
+
+
+async def get_sale_products(db : AsyncSession, sale_id : int):
+    query = (
+        select(Parent_Product.parent_name,
+               Parent_Product.parent_id,
+               Variant.var_price,
+               Variant.var_image_url,
+               )
+        .select_from(Parent_Product)
+        .join(Variant, Parent_Product.parent_id == Variant.parent_id)
+        .where(Variant.var_order == 1, Parent_Product.user_id == sale_id)
+    )
+
+    result = await db.execute(query)
+    return result.all()
+
+
+    
